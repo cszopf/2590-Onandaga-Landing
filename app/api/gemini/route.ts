@@ -5,11 +5,12 @@ export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
     
-    const rawApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_PLACES_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || process.env.API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    // Prioritize GEMINI_API_KEY as requested for Vercel deployment
+    const rawApiKey = process.env.GEMINI_API_KEY || process.env.API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     const apiKey = rawApiKey?.trim();
 
     if (!apiKey) {
-      console.error('Gemini API key missing. Checked: GEMINI_API_KEY, GOOGLE_PLACES_API_KEY, NEXT_PUBLIC_GOOGLE_PLACES_API_KEY, API_KEY, NEXT_PUBLIC_GEMINI_API_KEY');
+      console.error('Gemini API key missing. Checked: GEMINI_API_KEY, API_KEY, NEXT_PUBLIC_GEMINI_API_KEY');
       return NextResponse.json({ error: 'Gemini API key not configured' }, { status: 500 });
     }
 
@@ -20,9 +21,9 @@ export async function POST(req: Request) {
       setTimeout(() => reject(new Error('Gemini API request timed out on server (15s)')), 15000)
     );
 
-    // Use gemini-1.5-flash for maximum stability
+    // Use gemini-3.1-flash-lite-preview as requested
     const generatePromise = ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-3.1-flash-lite-preview",
       contents: prompt,
     });
 
