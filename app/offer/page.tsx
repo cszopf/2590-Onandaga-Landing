@@ -29,18 +29,18 @@ export default function OfferPortalEntry() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-[#F5F5F5] flex flex-col items-center justify-center p-4 md:p-6">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-white p-12 shadow-sm border border-black/5"
+        className="max-w-md w-full bg-white p-6 md:p-12 shadow-sm border border-black/5"
       >
-        <div className="text-center mb-12">
-          <div className="text-[10px] uppercase tracking-[0.3em] text-black/40 mb-4">
+        <div className="text-center mb-8 md:mb-12">
+          <div className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-black/40 mb-4">
             Engel & Völkers | Private Office
           </div>
-          <h1 className="text-3xl font-serif font-light mb-4">Offer Portal</h1>
-          <p className="text-black/60 font-light text-sm">
+          <h1 className="text-2xl md:text-3xl font-serif font-light mb-4">Offer Portal</h1>
+          <p className="text-black/60 font-light text-xs md:text-sm">
             Secure access for agents and sellers to manage property offers for 2590 Onandaga Dr.
           </p>
         </div>

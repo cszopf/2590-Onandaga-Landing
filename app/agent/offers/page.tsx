@@ -18,13 +18,15 @@ import {
   Download,
   Sparkles,
   Loader2,
-  X
+  X,
+  RotateCw
 } from 'lucide-react';
 
 export default function AgentDashboard() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'list' | 'grid'>('list');
   const [summaries, setSummaries] = useState<Record<string, { text: string; loading: boolean }>>({});
+  const [rejections, setRejections] = useState<Record<string, { text: string; loading: boolean }>>({});
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   // Mock data
@@ -86,13 +88,13 @@ export default function AgentDashboard() {
       return;
     }
 
+    await fetchSummary(offer);
+  };
+
+  const fetchSummary = async (offer: any) => {
     setSummaries(prev => ({ ...prev, [offer.id]: { text: '', loading: true } }));
     
     try {
-      // Add a small artificial delay for "AI feel" if it's too fast, 
-      // but keep it much faster than real AI.
-      const startTime = Date.now();
-      
       const prompt = `Analyze and summarize this real estate offer for a listing agent. 
       Highlight strengths, weaknesses, and potential risks. 
       Offer Details:
@@ -104,28 +106,71 @@ export default function AgentDashboard() {
       
       Provide a concise, professional summary in 3-4 bullet points.`;
 
+      // Add timeout to fetch
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
       const response = await fetch("/api/gemini", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({ prompt }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch from API");
-      }
-
-      // Ensure at least 600ms of loading for UX "weight"
-      const elapsed = Date.now() - startTime;
-      if (elapsed < 600) {
-        await new Promise(resolve => setTimeout(resolve, 600 - elapsed));
+        console.error('API Error Response:', data);
+        throw new Error(data.error || (typeof data.details === 'string' ? data.details : JSON.stringify(data.details)) || "Failed to fetch from API");
       }
 
       setSummaries(prev => ({ ...prev, [offer.id]: { text: data.text, loading: false } }));
     } catch (error: any) {
       console.error("AI Summary Error:", error);
-      setSummaries(prev => ({ ...prev, [offer.id]: { text: `Analysis Unavailable: ${error.message || "Connection error"}. Please ensure GOOGLE_API_KEY is configured.`, loading: false } }));
+      setSummaries(prev => ({ ...prev, [offer.id]: { text: `Analysis Unavailable: ${error.message || "Connection error"}. Please ensure API keys are configured correctly.`, loading: false } }));
+    }
+  };
+
+  const generateRejection = async (offer: any) => {
+    if (rejections[offer.id]?.text) return;
+
+    setRejections(prev => ({ ...prev, [offer.id]: { text: '', loading: true } }));
+
+    try {
+      const prompt = `Write a professional and polite rejection email to the buyer's agent for this real estate offer.
+      The seller has decided not to accept the offer at this time.
+      
+      Reason for rejection: The price is lower than other competitive offers we have received, and the number of contingencies presents too much risk for the seller's timeline.
+      
+      Offer Details:
+      Buyer: ${offer.buyer}
+      Agent: ${offer.agent}
+      Price: $${offer.price.toLocaleString()}
+      Financing: ${offer.financing}
+      Contingencies: ${offer.contingencies}
+      
+      The email should be encouraging but firm, thanking them for their interest.`;
+
+      // Add timeout to fetch
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
+      const response = await fetch("/api/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || data.details || "Failed to generate rejection");
+
+      setRejections(prev => ({ ...prev, [offer.id]: { text: data.text, loading: false } }));
+    } catch (error: any) {
+      console.error("Rejection Generation Error:", error);
+      setRejections(prev => ({ ...prev, [offer.id]: { text: `Error: ${error.message || "Failed to generate response"}. Please try again.`, loading: false } }));
     }
   };
 
@@ -323,22 +368,87 @@ export default function AgentDashboard() {
                       >
                         <td colSpan={6} className="px-8 py-6">
                           <div className="flex justify-between items-start gap-8">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-4">
-                                <Sparkles className="w-3 h-3 text-amber-600" />
-                                <span className="text-[10px] uppercase tracking-widest font-medium text-amber-900">AI Strategic Analysis</span>
+                            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-12">
+                              {/* Analysis Column */}
+                              <div>
+                                <div className="flex items-center justify-between mb-4">
+                                  <div className="flex items-center gap-2">
+                                    <Sparkles className="w-3 h-3 text-amber-600" />
+                                    <span className="text-[10px] uppercase tracking-widest font-medium text-amber-900">AI Strategic Analysis</span>
+                                  </div>
+                                  <button 
+                                    onClick={() => fetchSummary(offer)}
+                                    disabled={summaries[offer.id]?.loading}
+                                    className="p-1 text-amber-900/40 hover:text-amber-900 transition-colors disabled:opacity-50"
+                                    title="Regenerate Analysis"
+                                  >
+                                    <RotateCw className={`w-3 h-3 ${summaries[offer.id]?.loading ? 'animate-spin' : ''}`} />
+                                  </button>
+                                </div>
+                                {summaries[offer.id]?.loading ? (
+                                  <div className="flex items-center gap-3 text-black/40">
+                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                    <span className="text-xs font-light italic">Synthesizing offer terms...</span>
+                                  </div>
+                                ) : (
+                                  <div className="text-sm font-light leading-relaxed text-black/70 whitespace-pre-wrap">
+                                    {summaries[offer.id]?.text}
+                                  </div>
+                                )}
                               </div>
-                              {summaries[offer.id]?.loading ? (
-                                <div className="flex items-center gap-3 text-black/40">
-                                  <Loader2 className="w-3 h-3 animate-spin" />
-                                  <span className="text-xs font-light italic">Synthesizing offer terms...</span>
+
+                              {/* Response Column */}
+                              <div className="lg:border-l border-black/5 lg:pl-12">
+                                <div className="flex items-center gap-2 mb-4">
+                                  <MessageSquare className="w-3 h-3 text-black/40" />
+                                  <span className="text-[10px] uppercase tracking-widest font-medium text-black/60">Response Draft</span>
                                 </div>
-                              ) : (
-                                <div className="text-sm font-light leading-relaxed text-black/70 whitespace-pre-wrap max-w-3xl">
-                                  {summaries[offer.id]?.text}
-                                </div>
-                              )}
+                                
+                                {!rejections[offer.id] ? (
+                                  <div className="space-y-4">
+                                    <p className="text-xs font-light text-black/40">Generate a professional rejection response based on offer terms.</p>
+                                    <button 
+                                      onClick={() => generateRejection(offer)}
+                                      className="px-4 py-3 bg-white border border-black/10 text-[10px] uppercase tracking-widest hover:border-black/30 hover:bg-black/5 transition-all flex items-center gap-2"
+                                    >
+                                      <Sparkles className="w-3 h-3" /> Generate Rejection Draft
+                                    </button>
+                                  </div>
+                                ) : rejections[offer.id].loading ? (
+                                  <div className="flex items-center gap-3 text-black/40">
+                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                    <span className="text-xs font-light italic">Drafting response...</span>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-4">
+                                    <textarea 
+                                      className="w-full h-64 p-4 bg-white border border-black/5 text-sm font-light leading-relaxed focus:outline-none focus:border-black/20 resize-none"
+                                      value={rejections[offer.id].text}
+                                      onChange={(e) => setRejections(prev => ({ ...prev, [offer.id]: { ...prev[offer.id], text: e.target.value } }))}
+                                    />
+                                    <div className="flex gap-2">
+                                      <button 
+                                        onClick={() => navigator.clipboard.writeText(rejections[offer.id].text)}
+                                        className="px-4 py-2 bg-black text-white text-[10px] uppercase tracking-widest hover:bg-black/80 transition-all"
+                                      >
+                                        Copy to Clipboard
+                                      </button>
+                                      <button 
+                                        onClick={() => setRejections(prev => {
+                                          const newState = { ...prev };
+                                          delete newState[offer.id];
+                                          return newState;
+                                        })}
+                                        className="px-4 py-2 bg-white border border-black/10 text-[10px] uppercase tracking-widest hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all"
+                                      >
+                                        Discard
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                             </div>
+
                             <button 
                               onClick={() => {
                                 const newExpanded = new Set(expandedIds);

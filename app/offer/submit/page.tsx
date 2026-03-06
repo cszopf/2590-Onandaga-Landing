@@ -152,12 +152,12 @@ export default function OfferSubmissionWizard() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] pb-20">
       {/* Header */}
-      <header className="bg-white border-b border-black/5 px-8 py-6 sticky top-0 z-30">
+      <header className="bg-white border-b border-black/5 px-4 md:px-8 py-4 md:py-6 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <div className="text-xs font-serif tracking-widest uppercase">ENGEL & VÖLKERS</div>
+          <div className="flex items-center gap-3 md:gap-6">
+            <div className="text-[10px] md:text-xs font-serif tracking-widest uppercase">ENGEL & VÖLKERS</div>
             <div className="h-4 w-px bg-black/10" />
-            <div className="text-[10px] uppercase tracking-widest text-black/40">Offer Submission</div>
+            <div className="text-[9px] md:text-[10px] uppercase tracking-widest text-black/40">Offer Submission</div>
           </div>
           <button onClick={() => window.history.back()} className="text-black/40 hover:text-black transition-colors">
             <X className="w-5 h-5" />
@@ -165,23 +165,23 @@ export default function OfferSubmissionWizard() {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto mt-12 px-6">
+      <div className="max-w-4xl mx-auto mt-6 md:mt-12 px-4 md:px-6">
         {/* Property Summary (Locked) */}
-        <div className="bg-black text-white p-8 mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="bg-black text-white p-6 md:p-8 mb-8 md:mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-8">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-2">Property Details (Locked)</div>
-            <h2 className="text-xl font-serif font-light">2590 Onandaga Dr, Columbus, OH 43221</h2>
-            <p className="text-white/60 text-xs tracking-widest mt-1">MLS: 224012345 | LIST PRICE: $9,000,000</p>
+            <div className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-white/40 mb-2">Property Details (Locked)</div>
+            <h2 className="text-lg md:text-xl font-serif font-light">2590 Onandaga Dr, Columbus, OH 43221</h2>
+            <p className="text-white/60 text-[10px] md:text-xs tracking-widest mt-1">MLS: 224012345 | LIST PRICE: $9,000,000</p>
           </div>
-          <div className="text-right">
-             <div className="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-2">Listing Agent</div>
-             <p className="text-sm font-light">Susanne Horner</p>
+          <div className="md:text-right">
+             <div className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-white/40 mb-2">Listing Agent</div>
+             <p className="text-xs md:text-sm font-light">Susanne Horner</p>
           </div>
         </div>
 
         {/* Stepper */}
-        <div className="flex justify-between mb-12 relative">
-          <div className="absolute top-1/2 left-0 w-full h-px bg-black/5 -translate-y-1/2 z-0" />
+        <div className="flex justify-between mb-8 md:mb-12 relative px-2">
+          <div className="absolute top-4 left-0 w-full h-px bg-black/5 z-0" />
           {['terms', 'buyer', 'uploads', 'review'].map((s, i) => (
             <div key={s} className="relative z-10 flex flex-col items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-medium transition-all duration-500 ${
@@ -190,13 +190,13 @@ export default function OfferSubmissionWizard() {
               }`}>
                 {['terms', 'buyer', 'uploads', 'review'].indexOf(step) > i ? <CheckCircle className="w-4 h-4" /> : i + 1}
               </div>
-              <span className={`text-[10px] uppercase tracking-widest mt-3 ${step === s ? 'text-black font-medium' : 'text-black/30'}`}>{s}</span>
+              <span className={`hidden sm:block text-[10px] uppercase tracking-widest mt-3 ${step === s ? 'text-black font-medium' : 'text-black/30'}`}>{s}</span>
             </div>
           ))}
         </div>
 
         {/* Form Content */}
-        <div className="bg-white p-12 shadow-sm border border-black/5">
+        <div className="bg-white p-6 md:p-12 shadow-sm border border-black/5">
           <AnimatePresence mode="wait">
             {step === 'terms' && (
               <motion.div 
@@ -439,29 +439,29 @@ export default function OfferSubmissionWizard() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-12"
+                className="space-y-8 md:space-y-12"
               >
                 <div className="space-y-6">
                   <h3 className="text-xs uppercase tracking-[0.2em] font-medium">Required Documents</h3>
-                  <div className="border-2 border-dashed border-black/10 p-12 text-center hover:border-black/30 transition-colors cursor-pointer relative">
+                  <div className="border-2 border-dashed border-black/10 p-8 md:p-12 text-center hover:border-black/30 transition-colors cursor-pointer relative">
                     <input 
                       type="file" 
                       multiple 
                       onChange={handleFileUpload}
                       className="absolute inset-0 opacity-0 cursor-pointer"
                     />
-                    <Upload className="w-10 h-10 mx-auto mb-4 text-black/20" />
+                    <Upload className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-4 text-black/20" />
                     <p className="text-sm font-light text-black/60">Drag and drop or click to upload</p>
                     <p className="text-[10px] uppercase tracking-widest text-black/30 mt-2">PDF, DOCX up to 20MB</p>
                   </div>
 
                   <div className="space-y-3">
                     {files.map((file, i) => (
-                      <div key={i} className="flex items-center justify-between p-4 bg-[#F5F5F5] border border-black/5">
+                      <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-[#F5F5F5] border border-black/5 gap-4">
                         <div className="flex items-center gap-4">
                           <FileText className="w-4 h-4 text-black/40" />
                           <div>
-                            <p className="text-sm font-light">{file.name}</p>
+                            <p className="text-sm font-light truncate max-w-[200px]">{file.name}</p>
                             <select 
                               className="text-[10px] uppercase tracking-widest bg-transparent text-black/40 focus:outline-none"
                               value={file.type}
@@ -481,7 +481,7 @@ export default function OfferSubmissionWizard() {
                         </div>
                         <button 
                           onClick={() => setFiles(p => p.filter((_, idx) => idx !== i))}
-                          className="text-black/20 hover:text-red-500 transition-colors"
+                          className="text-black/20 hover:text-red-500 transition-colors self-end sm:self-auto"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -490,9 +490,9 @@ export default function OfferSubmissionWizard() {
                   </div>
                 </div>
 
-                <div className="p-6 bg-amber-50 border border-amber-100 flex gap-4">
+                <div className="p-4 md:p-6 bg-amber-50 border border-amber-100 flex gap-4">
                   <Info className="w-5 h-5 text-amber-600 shrink-0" />
-                  <p className="text-xs text-amber-800 leading-relaxed">
+                  <p className="text-[11px] md:text-xs text-amber-800 leading-relaxed">
                     Please ensure all signatures are present on the purchase contract before uploading. Susanne Horner requires a complete package for initial review.
                   </p>
                 </div>
@@ -505,17 +505,17 @@ export default function OfferSubmissionWizard() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-12"
+                className="space-y-8 md:space-y-12"
               >
                 <div className="space-y-8">
-                  <div className="p-8 bg-zinc-50 border border-black/5">
-                    <div className="flex justify-between items-end mb-8">
+                  <div className="p-6 md:p-8 bg-zinc-50 border border-black/5">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
                       <div>
                         <h3 className="text-xs uppercase tracking-[0.2em] font-medium mb-1">Offer Strength Score</h3>
                         <p className="text-[10px] text-black/40 uppercase tracking-widest">Verified by Smart Algorithm</p>
                       </div>
-                      <div className="text-right">
-                        <div className="text-4xl font-serif">
+                      <div className="text-right w-full sm:w-auto">
+                        <div className="text-3xl md:text-4xl font-serif">
                           {(() => {
                             let score = 85;
                             if (formData.earnest_money_holder.toLowerCase().includes('world class title')) score += 5;
@@ -531,7 +531,7 @@ export default function OfferSubmissionWizard() {
                     </div>
 
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between text-[11px] uppercase tracking-widest">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[10px] md:text-[11px] uppercase tracking-widest gap-1">
                         <span className="flex items-center gap-2">
                           {formData.earnest_money_holder.toLowerCase().includes('world class title') ? (
                             <TrendingUp className="w-3 h-3 text-emerald-500" />
@@ -545,7 +545,7 @@ export default function OfferSubmissionWizard() {
                         </span>
                       </div>
                       
-                      <div className="flex items-center justify-between text-[11px] uppercase tracking-widest">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[10px] md:text-[11px] uppercase tracking-widest gap-1">
                         <span className="flex items-center gap-2">
                           {formData.represented_by_agent ? (
                             <TrendingUp className="w-3 h-3 text-emerald-500" />
@@ -559,7 +559,7 @@ export default function OfferSubmissionWizard() {
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between text-[11px] uppercase tracking-widest">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[10px] md:text-[11px] uppercase tracking-widest gap-1">
                         <span className="flex items-center gap-2">
                           <TrendingUp className="w-3 h-3 text-emerald-500" />
                           Buyer Verification
@@ -569,24 +569,24 @@ export default function OfferSubmissionWizard() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                   <div className="space-y-6">
                     <h3 className="text-xs uppercase tracking-[0.2em] font-medium border-b border-black/5 pb-2">Financial Terms</h3>
                     <div className="space-y-4">
                       <div className="flex justify-between">
-                        <span className="text-xs text-black/40 uppercase tracking-widest">Offer Price</span>
+                        <span className="text-[10px] md:text-xs text-black/40 uppercase tracking-widest">Offer Price</span>
                         <span className="text-sm font-medium">${Number(formData.offer_price).toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-xs text-black/40 uppercase tracking-widest">Earnest Money</span>
+                        <span className="text-[10px] md:text-xs text-black/40 uppercase tracking-widest">Earnest Money</span>
                         <span className="text-sm font-light">${Number(formData.earnest_money).toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-xs text-black/40 uppercase tracking-widest">Financing</span>
+                        <span className="text-[10px] md:text-xs text-black/40 uppercase tracking-widest">Financing</span>
                         <span className="text-sm font-light uppercase tracking-widest">{formData.financing_type}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-xs text-black/40 uppercase tracking-widest">Closing</span>
+                        <span className="text-[10px] md:text-xs text-black/40 uppercase tracking-widest">Closing</span>
                         <span className="text-sm font-light">{formData.closing_date}</span>
                       </div>
                     </div>
@@ -596,19 +596,19 @@ export default function OfferSubmissionWizard() {
                     <h3 className="text-xs uppercase tracking-[0.2em] font-medium border-b border-black/5 pb-2">Contingencies</h3>
                     <div className="space-y-4">
                       <div className="flex justify-between">
-                        <span className="text-xs text-black/40 uppercase tracking-widest">Inspection</span>
+                        <span className="text-[10px] md:text-xs text-black/40 uppercase tracking-widest">Inspection</span>
                         <span className="text-sm font-light">{formData.inspection ? `${formData.inspection_days} Days` : 'Waived'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-xs text-black/40 uppercase tracking-widest">Appraisal</span>
+                        <span className="text-[10px] md:text-xs text-black/40 uppercase tracking-widest">Appraisal</span>
                         <span className="text-sm font-light">{formData.appraisal ? 'Included' : 'Waived'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-xs text-black/40 uppercase tracking-widest">Financing</span>
+                        <span className="text-[10px] md:text-xs text-black/40 uppercase tracking-widest">Financing</span>
                         <span className="text-sm font-light">{formData.financing ? 'Included' : 'Waived'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-xs text-black/40 uppercase tracking-widest">Escalation</span>
+                        <span className="text-[10px] md:text-xs text-black/40 uppercase tracking-widest">Escalation</span>
                         <span className="text-sm font-light">{formData.escalation_enabled ? 'Enabled' : 'Disabled'}</span>
                       </div>
                     </div>
@@ -619,7 +619,7 @@ export default function OfferSubmissionWizard() {
                   <h3 className="text-xs uppercase tracking-[0.2em] font-medium border-b border-black/5 pb-2">Documents ({files.length})</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {files.map((f, i) => (
-                      <div key={i} className="flex items-center gap-3 text-xs text-black/60">
+                      <div key={i} className="flex items-center gap-3 text-[10px] md:text-xs text-black/60">
                         <CheckCircle className="w-3 h-3 text-emerald-500" />
                         {f.name} ({f.type})
                       </div>
@@ -627,13 +627,13 @@ export default function OfferSubmissionWizard() {
                   </div>
                 </div>
 
-                <div className="p-8 bg-black text-white space-y-4">
+                <div className="p-6 md:p-8 bg-black text-white space-y-4">
                   <Checkbox 
                     label="I certify that all information provided is accurate and matches the attached contract." 
                     checked={true}
                     onChange={() => {}}
                   />
-                  <p className="text-[10px] text-white/40 uppercase tracking-widest leading-relaxed">
+                  <p className="text-[9px] md:text-[10px] text-white/40 uppercase tracking-widest leading-relaxed">
                     By submitting this offer, you authorize Susanne Horner to present these terms to the seller. This submission creates a digital record of the offer terms for audit purposes.
                   </p>
                 </div>
@@ -643,7 +643,7 @@ export default function OfferSubmissionWizard() {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="mt-12 pt-12 border-t border-black/5 flex justify-between items-center">
+          <div className="mt-8 md:mt-12 pt-8 md:pt-12 border-t border-black/5 flex flex-col sm:flex-row justify-between items-center gap-6">
             <button 
               onClick={() => {
                 if (step === 'buyer') setStep('terms');
@@ -651,7 +651,7 @@ export default function OfferSubmissionWizard() {
                 if (step === 'review') setStep('uploads');
               }}
               disabled={step === 'terms'}
-              className="flex items-center gap-2 text-xs uppercase tracking-widest text-black/40 hover:text-black transition-colors disabled:opacity-0"
+              className="flex items-center gap-2 text-[10px] md:text-xs uppercase tracking-widest text-black/40 hover:text-black transition-colors disabled:opacity-0 order-2 sm:order-1"
             >
               <ChevronLeft className="w-4 h-4" /> Back
             </button>
@@ -660,7 +660,7 @@ export default function OfferSubmissionWizard() {
               <button 
                 onClick={handleSubmit}
                 disabled={loading}
-                className="px-12 py-4 bg-[#D0112B] text-white text-xs uppercase tracking-widest hover:bg-[#A00D21] transition-all disabled:opacity-50 flex items-center gap-3"
+                className="w-full sm:w-auto px-8 md:px-12 py-4 bg-[#D0112B] text-white text-[10px] md:text-xs uppercase tracking-widest hover:bg-[#A00D21] transition-all disabled:opacity-50 flex items-center justify-center gap-3 order-1 sm:order-2"
               >
                 {loading ? 'Submitting...' : 'Confirm and Submit Offer'}
                 {!loading && <ChevronRight className="w-4 h-4" />}
@@ -672,7 +672,7 @@ export default function OfferSubmissionWizard() {
                   if (step === 'buyer') setStep('uploads');
                   if (step === 'uploads') setStep('review');
                 }}
-                className="px-12 py-4 bg-black text-white text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all flex items-center gap-3"
+                className="w-full sm:w-auto px-8 md:px-12 py-4 bg-black text-white text-[10px] md:text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all flex items-center justify-center gap-3 order-1 sm:order-2"
               >
                 Continue to {step === 'terms' ? 'Buyer' : step === 'buyer' ? 'Uploads' : 'Review'}
                 <ChevronRight className="w-4 h-4" />

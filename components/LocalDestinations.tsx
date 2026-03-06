@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MapPin, Search, ExternalLink, Navigation, Utensils, TreePine, GraduationCap, Coffee } from 'lucide-react';
+import { MapPin, Navigation, Utensils, TreePine, GraduationCap, Coffee, ExternalLink } from 'lucide-react';
 
 const CATEGORIES = [
-  { id: 'restaurants', label: 'Fine Dining', icon: Utensils, query: 'best fine dining restaurants near 2590 Onandaga Dr, Columbus, OH' },
-  { id: 'parks', label: 'Parks & Nature', icon: TreePine, query: 'scenic parks and nature preserves near 2590 Onandaga Dr, Columbus, OH' },
-  { id: 'schools', label: 'Education', icon: GraduationCap, query: 'top rated private and public schools near 2590 Onandaga Dr, Columbus, OH' },
-  { id: 'coffee', label: 'Cafés', icon: Coffee, query: 'best artisanal coffee shops near 2590 Onandaga Dr, Columbus, OH' },
+  { id: 'restaurants', label: 'Fine Dining', icon: Utensils, query: 'fine dining restaurants near 2590 Onandaga Dr, Columbus, OH' },
+  { id: 'parks', label: 'Parks & Nature', icon: TreePine, query: 'parks near 2590 Onandaga Dr, Columbus, OH' },
+  { id: 'schools', label: 'Education', icon: GraduationCap, query: 'schools near 2590 Onandaga Dr, Columbus, OH' },
+  { id: 'coffee', label: 'Cafés', icon: Coffee, query: 'coffee shops near 2590 Onandaga Dr, Columbus, OH' },
 ];
 
 export default function LocalDestinations() {
@@ -21,8 +21,10 @@ export default function LocalDestinations() {
     setLoading(true);
     setActiveCategory(categoryId);
     setError(null);
+    setResults(null); // Clear previous results
+
     try {
-      const response = await fetch("/api/gemini", {
+      const response = await fetch("/api/places", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: query })
@@ -33,7 +35,7 @@ export default function LocalDestinations() {
       }
 
       const data = await response.json();
-      setResults({ text: data.text, links: [] });
+      setResults({ text: data.text, links: data.links || [] });
     } catch (err) {
       console.error("Error fetching destinations:", err);
       setError("Failed to load local insights. Please try again.");
@@ -49,7 +51,7 @@ export default function LocalDestinations() {
           <span className="block text-[10px] uppercase tracking-[0.3em] mb-4 text-black/40">The Neighborhood</span>
           <h2 className="text-3xl md:text-5xl font-serif font-light leading-tight text-black">Local Destinations</h2>
           <p className="mt-6 text-black/60 font-light max-w-2xl">
-            Explore the refined surroundings of Upper Arlington. Select a category to discover curated local insights powered by Google Maps.
+            Explore the refined surroundings of Upper Arlington. Select a category to discover curated local insights.
           </p>
         </div>
 
@@ -58,7 +60,7 @@ export default function LocalDestinations() {
             <button
               key={cat.id}
               onClick={() => fetchDestinations(cat.query, cat.id)}
-              disabled={loading}
+              disabled={loading && activeCategory === cat.id}
               className={`flex flex-col items-center justify-center p-8 border transition-all duration-300 group ${
                 activeCategory === cat.id 
                   ? 'bg-black text-white border-black' 
